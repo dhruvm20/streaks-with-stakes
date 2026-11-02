@@ -26,3 +26,9 @@ Version 1.0 will:
 - **Data storage:** CSV files (`commitment.csv`, `checkins.csv`)
 - **Data sources:** None; all input comes from the terminal
 - **Tools:** VS Code, Git, GitHub, terminal
+
+## System Diagram
+![Streak with Stakes flowchart](docs/system_diagram.png)
+
+## Eisenhower Matrix
+[View the Eisenhower Matrix](docs/Eisenhower_Matrix_Streak_with_Stakes.pdf)
