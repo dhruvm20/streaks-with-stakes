@@ -1,27 +1,28 @@
 # Streak with Stakes
 
-A Java command-line study tracker that makes skipping a study day cost something.
-
 ## Project Goal
-Help me stay consistent with studying by attaching a personal consequence to a weekly commitment.
+Students trying to build a study habit often start strong, then fall off after missing a few days. Regular trackers only record a missed day, so skipping costs nothing. Streak with Stakes is a Java command-line tool that has you set a weekly study commitment with a personal consequence, then tracks your check-ins and tells you when you've broken it.
 
 ## MVP Scope
-- Set a weekly study commitment
-- Check in for today and block duplicates
+Version 1.0 will:
+
+- Set a weekly study commitment with a daily study goal, allowed misses, and a consequence
+- Check in for today and block duplicate check-ins
 - Save and load data from CSV files
 - Count misses and show the current streak
-- Show the week's status, limit warning, and broken commitment message
+- Show the week's status, a warning at the miss limit, and a message when the commitment is broken
 
-## Future Plans
+## Future Plans (V2.0+)
+
 - Track multiple habits
 - Send a daily reminder to study
 - Keep history across weeks
 - Show monthly stats and longest streak
 
 ## Tech Stack
+
 - **Language:** Java
-- **Built-in libraries:** `java.time`, `java.nio.file`
-- **External library:** JUnit
-- **Data storage:** `commitment.csv`, `checkins.csv`
-- **Data source:** None, all data is entered from the terminal
-- **Tools:** Git, GitHub, IDE or terminal
+- **Libraries:** `java.time` and `java.nio.file` from the Java standard library, plus JUnit for tests
+- **Data storage:** CSV files (`commitment.csv`, `checkins.csv`)
+- **Data sources:** None; all input comes from the terminal
+- **Tools:** VS Code, Git, GitHub, terminal
