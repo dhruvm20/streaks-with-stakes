@@ -27,6 +27,28 @@ Version 1.0 will:
 - **Data sources:** None; all input comes from the terminal
 - **Tools:** VS Code, Git, GitHub, terminal
 
+## Setup and Running
+
+Requires Java 17 or newer (check with `java -version`).
+
+```bash
+git clone https://github.com/dhruvm20/streaks-with-stakes.git
+cd streaks-with-stakes
+javac -d out src/*.java
+java -cp out StreakWithStakes help
+```
+
+## Roadmap
+- [x] Set up repo, folder structure, and README
+- [x] Read command from terminal and print usage for invalid input
+- [ ] `commit` saves the weekly rule to commitment.csv
+- [ ] `done` saves today's date to checkins.csv
+- [ ] Load saved data at startup and block duplicate check-ins
+- [ ] Calculate and display the current streak
+- [ ] Count misses and display weekly status
+- [ ] Show limit warning and broken-commitment message
+- [ ] Handle missing or bad files, and add JUnit tests
+
 ## System Diagram
 ![Streak with Stakes flowchart](docs/system_diagram.png)
 
