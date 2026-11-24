@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.time.LocalDate;
+
 /**
  * Entry point for Streak with Stakes: reads one command from the terminal
  * and hands it to the matching handler.
@@ -15,8 +18,8 @@ public class StreakWithStakes {
             return;
         }
 
-        // Lowercase so "Done" and "DONE" work too; a typo in case shouldn't
-        // cost the user a check-in.
+        
+        
         String command = args[0].toLowerCase();
 
         switch (command) {
@@ -46,9 +49,44 @@ public class StreakWithStakes {
             printUsage();
             return;
         }
-        // Chunk 3 replaces this with validation and saving to commitment.csv.
-        System.out.println("Commitment received: " + args[1] + " min/day, "
-                + args[2] + " misses allowed, consequence: " + args[3]);
+        int minutesPerDay;
+        int allowedMisses;
+        try {
+            minutesPerDay = Integer.parseInt(args[1]);
+            allowedMisses = Integer.parseInt(args[2]);
+        } catch (NumberFormatException e) {
+            System.out.println("Daily goal and allowed misses must be whole numbers, like: commit 30 2 \"No Netflix\"");
+            return;
+        }
+
+        // A 0-minute goal isn't a commitment, and 7+ misses in a 7-day week
+        // means the consequence could never trigger, so both are rejected.
+        if (minutesPerDay <= 0) {
+            System.out.println("Daily goal must be at least 1 minute.");
+            return;
+        }
+        if (allowedMisses < 0 || allowedMisses > 6) {
+            System.out.println("Allowed misses must be between 0 and 6.");
+            return;
+        }
+
+        String consequence = args[3].trim();
+        if (consequence.isEmpty()) {
+            System.out.println("Consequence can't be empty. The stakes are the point.");
+            return;
+        }
+
+        LocalDate weekStart = LocalDate.now();
+        try {
+            Storage.saveCommitment(weekStart, minutesPerDay, allowedMisses, consequence);
+        } catch (IOException e) {
+            System.out.println("Couldn't save your commitment: " + e.getMessage());
+            return;
+        }
+
+        System.out.println("Commitment saved for the week starting " + weekStart + ":");
+        System.out.println("  Study " + minutesPerDay + " min/day, up to " + allowedMisses + " missed day(s).");
+        System.out.println("  If you break it: " + consequence);
     }
 
     private static void handleDone() {
