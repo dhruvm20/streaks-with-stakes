@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 
 /**
@@ -11,6 +12,7 @@ public class Storage {
 
     private static final Path DATA_DIR = Paths.get("data");
     private static final Path COMMITMENT_FILE = DATA_DIR.resolve("commitment.csv");
+    private static final Path CHECKINS_FILE = DATA_DIR.resolve("checkins.csv");
 
     /**
      * Saves this week's rule, replacing any earlier commitment.
@@ -23,5 +25,18 @@ public class Storage {
         String header = "weekStart,minutesPerDay,allowedMisses,consequence";
         String row = weekStart + "," + minutesPerDay + "," + allowedMisses + "," + consequence;
         Files.writeString(COMMITMENT_FILE, header + System.lineSeparator() + row + System.lineSeparator());
+    }
+
+    /**
+     * Adds one check-in date to the end of checkins.csv, creating the file
+     * with a header the first time.
+     */
+    public static void appendCheckIn(LocalDate date) throws IOException {
+        Files.createDirectories(DATA_DIR);
+
+        if (Files.notExists(CHECKINS_FILE)) {
+            Files.writeString(CHECKINS_FILE, "date" + System.lineSeparator());
+        }
+        Files.writeString(CHECKINS_FILE, date + System.lineSeparator(), StandardOpenOption.APPEND);
     }
 }

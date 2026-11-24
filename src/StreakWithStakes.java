@@ -18,8 +18,6 @@ public class StreakWithStakes {
             return;
         }
 
-        
-        
         String command = args[0].toLowerCase();
 
         switch (command) {
@@ -90,8 +88,14 @@ public class StreakWithStakes {
     }
 
     private static void handleDone() {
-        // Chunk 4 replaces this with appending today's date to checkins.csv.
-        System.out.println("Check-in received.");
+        LocalDate today = LocalDate.now();
+        try {
+            Storage.appendCheckIn(today);
+        } catch (IOException e) {
+            System.out.println("Couldn't save your check-in: " + e.getMessage());
+            return;
+        }
+        System.out.println("Checked in for " + today + ". Nice work.");
     }
 
     private static void handleStatus() {
