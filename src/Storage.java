@@ -4,6 +4,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Reads and writes the CSV files in the data/ folder.
@@ -38,5 +41,43 @@ public class Storage {
             Files.writeString(CHECKINS_FILE, "date" + System.lineSeparator());
         }
         Files.writeString(CHECKINS_FILE, date + System.lineSeparator(), StandardOpenOption.APPEND);
+    }
+
+    /**
+     * Returns the saved commitment, or null if none has been made yet.
+     */
+    public static Commitment loadCommitment() throws IOException {
+        if (Files.notExists(COMMITMENT_FILE)) {
+            return null;
+        }
+        List<String> lines = Files.readAllLines(COMMITMENT_FILE);
+        if (lines.size() < 2) {
+            return null;
+        }
+
+        String[] parts = lines.get(1).split(",", 4);
+        return new Commitment(
+                LocalDate.parse(parts[0]),
+                Integer.parseInt(parts[1]),
+                Integer.parseInt(parts[2]),
+                parts[3]);
+    }
+
+    /**
+     * Returns every saved check-in date, oldest first. Empty if there are none yet.
+     */
+    public static Set<LocalDate> loadCheckIns() throws IOException {
+        Set<LocalDate> checkIns = new TreeSet<>();
+        if (Files.notExists(CHECKINS_FILE)) {
+            return checkIns;
+        }
+        List<String> lines = Files.readAllLines(CHECKINS_FILE);
+        for (int i = 1; i < lines.size(); i++) {
+            String line = lines.get(i).trim();
+            if (!line.isEmpty()) {
+                checkIns.add(LocalDate.parse(line));
+            }
+        }
+        return checkIns;
     }
 }

@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * Entry point for Streak with Stakes: reads one command from the terminal
@@ -20,15 +21,25 @@ public class StreakWithStakes {
 
         String command = args[0].toLowerCase();
 
+        Commitment commitment;
+        Set<LocalDate> checkIns;
+        try {
+            commitment = Storage.loadCommitment();
+            checkIns = Storage.loadCheckIns();
+        } catch (IOException e) {
+            System.out.println("Couldn't read your saved data: " + e.getMessage());
+            return;
+        }
+
         switch (command) {
             case "commit":
                 handleCommit(args);
                 break;
             case "done":
-                handleDone();
+                handleDone(commitment, checkIns);
                 break;
             case "status":
-                handleStatus();
+                handleStatus(commitment);
                 break;
             case "help":
                 printUsage();
@@ -40,8 +51,6 @@ public class StreakWithStakes {
     }
 
     private static void handleCommit(String[] args) {
-        // Exactly four tokens: the command plus three values. The consequence
-        // must be quoted on the command line so spaces stay in one argument.
         if (args.length != 4) {
             System.out.println("commit needs a daily goal, allowed misses, and a consequence.");
             printUsage();
@@ -87,8 +96,20 @@ public class StreakWithStakes {
         System.out.println("  If you break it: " + consequence);
     }
 
-    private static void handleDone() {
+    private static void handleDone(Commitment commitment, Set<LocalDate> checkIns) {
+        if (commitment == null) {
+            System.out.println("Set a commitment first, like: commit 30 2 \"No Netflix\"");
+            return;
+        }
+
         LocalDate today = LocalDate.now();
+        // One check-in per day: a second one would inflate the streak and
+        // hide misses, which defeats the point of the stakes.
+        if (checkIns.contains(today)) {
+            System.out.println("You already checked in today (" + today + ").");
+            return;
+        }
+
         try {
             Storage.appendCheckIn(today);
         } catch (IOException e) {
@@ -98,9 +119,14 @@ public class StreakWithStakes {
         System.out.println("Checked in for " + today + ". Nice work.");
     }
 
-    private static void handleStatus() {
-        // Chunks 6-8 replace this with the streak, miss count, and warnings.
-        System.out.println("Status: no data yet.");
+    private static void handleStatus(Commitment commitment) {
+        if (commitment == null) {
+            System.out.println("No commitment yet. Start one with: commit 30 2 \"No Netflix\"");
+            return;
+        }
+        System.out.println("Week starting " + commitment.weekStart() + ": "
+                + commitment.minutesPerDay() + " min/day, " + commitment.allowedMisses()
+                + " miss(es) allowed. Consequence: " + commitment.consequence());
     }
 
     private static void printUsage() {
