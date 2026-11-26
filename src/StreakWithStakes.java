@@ -39,7 +39,7 @@ public class StreakWithStakes {
                 handleDone(commitment, checkIns);
                 break;
             case "status":
-                handleStatus(commitment);
+                handleStatus(commitment, checkIns);
                 break;
             case "help":
                 printUsage();
@@ -119,7 +119,7 @@ public class StreakWithStakes {
         System.out.println("Checked in for " + today + ". Nice work.");
     }
 
-    private static void handleStatus(Commitment commitment) {
+    private static void handleStatus(Commitment commitment, Set<LocalDate> checkIns) {
         if (commitment == null) {
             System.out.println("No commitment yet. Start one with: commit 30 2 \"No Netflix\"");
             return;
@@ -127,6 +127,17 @@ public class StreakWithStakes {
         System.out.println("Week starting " + commitment.weekStart() + ": "
                 + commitment.minutesPerDay() + " min/day, " + commitment.allowedMisses()
                 + " miss(es) allowed. Consequence: " + commitment.consequence());
+
+        LocalDate today = LocalDate.now();
+        int streak = StreakCalculator.currentStreak(checkIns, today);
+        String unit = " days";
+        if (streak == 1) {
+            unit = " day";
+        }
+        System.out.println("Current streak: " + streak + unit);
+        if (!checkIns.contains(today)) {
+            System.out.println("You haven't checked in today yet.");
+        }
     }
 
     private static void printUsage() {
