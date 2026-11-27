@@ -41,10 +41,10 @@ java -cp out StreakWithStakes help
 ## Roadmap
 - [x] Set up repo, folder structure, and README
 - [x] Read command from terminal and print usage for invalid input
-- [ ] `commit` saves the weekly rule to commitment.csv
-- [ ] `done` saves today's date to checkins.csv
-- [ ] Load saved data at startup and block duplicate check-ins
-- [ ] Calculate and display the current streak
+- [x] `commit` saves the weekly rule to commitment.csv
+- [x] `done` saves today's date to checkins.csv
+- [x] Load saved data at startup and block duplicate check-ins
+- [x] Calculate and display the current streak
 - [ ] Count misses and display weekly status
 - [ ] Show limit warning and broken-commitment message
 - [ ] Handle missing or bad files, and add JUnit tests
