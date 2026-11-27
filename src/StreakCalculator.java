@@ -26,4 +26,26 @@ public class StreakCalculator {
         }
         return streak;
     }
+
+    /**
+     * Returns how many days of the commitment week have no check-in,
+     * from the week's start up to yesterday.
+     */
+    public static int countMisses(Set<LocalDate> checkIns, LocalDate weekStart, LocalDate today) {
+        // Today isn't counted because there's still time to check in, and
+        // days before weekStart don't count because the rule wasn't set yet.
+        LocalDate lastDayToCount = today.minusDays(1);
+        LocalDate weekEnd = weekStart.plusDays(6);
+        if (lastDayToCount.isAfter(weekEnd)) {
+            lastDayToCount = weekEnd;
+        }
+
+        int misses = 0;
+        for (LocalDate day = weekStart; !day.isAfter(lastDayToCount); day = day.plusDays(1)) {
+            if (!checkIns.contains(day)) {
+                misses++;
+            }
+        }
+        return misses;
+    }
 }

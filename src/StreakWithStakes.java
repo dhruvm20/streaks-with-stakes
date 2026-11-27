@@ -138,6 +138,9 @@ public class StreakWithStakes {
         if (!checkIns.contains(today)) {
             System.out.println("You haven't checked in today yet.");
         }
+
+        int misses = StreakCalculator.countMisses(checkIns, commitment.weekStart(), today);
+        System.out.println("Misses this week: " + misses + " of " + commitment.allowedMisses() + " allowed");
     }
 
     private static void printUsage() {
