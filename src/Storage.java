@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -16,6 +17,8 @@ public class Storage {
     private static final Path DATA_DIR = Paths.get("data");
     private static final Path COMMITMENT_FILE = DATA_DIR.resolve("commitment.csv");
     private static final Path CHECKINS_FILE = DATA_DIR.resolve("checkins.csv");
+    private static final String CHECKINS_HEADER = "date";
+    private static final String DAMAGED_COMMITMENT = "commitment.csv is damaged. Run commit again to replace it.";
 
     /**
      * Saves this week's rule, replacing any earlier commitment.
@@ -37,8 +40,8 @@ public class Storage {
     public static void appendCheckIn(LocalDate date) throws IOException {
         Files.createDirectories(DATA_DIR);
 
-        if (Files.notExists(CHECKINS_FILE)) {
-            Files.writeString(CHECKINS_FILE, "date" + System.lineSeparator());
+        if (Files.notExists(CHECKINS_FILE) || Files.size(CHECKINS_FILE) == 0) {
+            Files.writeString(CHECKINS_FILE, CHECKINS_HEADER + System.lineSeparator());
         }
         Files.writeString(CHECKINS_FILE, date + System.lineSeparator(), StandardOpenOption.APPEND);
     }
@@ -56,11 +59,18 @@ public class Storage {
         }
 
         String[] parts = lines.get(1).split(",", 4);
-        return new Commitment(
-                LocalDate.parse(parts[0]),
-                Integer.parseInt(parts[1]),
-                Integer.parseInt(parts[2]),
-                parts[3]);
+        if (parts.length != 4) {
+            throw new IOException(DAMAGED_COMMITMENT);
+        }
+        try {
+            return new Commitment(
+                    LocalDate.parse(parts[0]),
+                    Integer.parseInt(parts[1]),
+                    Integer.parseInt(parts[2]),
+                    parts[3]);
+        } catch (DateTimeParseException | NumberFormatException e) {
+            throw new IOException(DAMAGED_COMMITMENT);
+        }
     }
 
     /**
@@ -72,10 +82,16 @@ public class Storage {
             return checkIns;
         }
         List<String> lines = Files.readAllLines(CHECKINS_FILE);
-        for (int i = 1; i < lines.size(); i++) {
+        for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i).trim();
-            if (!line.isEmpty()) {
+            if (line.isEmpty() || line.equals(CHECKINS_HEADER)) {
+                continue;
+            }
+            try {
                 checkIns.add(LocalDate.parse(line));
+            } catch (DateTimeParseException e) {
+                throw new IOException("checkins.csv line " + (i + 1)
+                        + " isn't a date. Dates should look like 2026-11-27.");
             }
         }
         return checkIns;

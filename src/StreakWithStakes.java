@@ -21,28 +21,33 @@ public class StreakWithStakes {
 
         String command = args[0].toLowerCase();
 
+        // commit and help don't need saved data, so they run before loading.
+        // That way a damaged file never blocks the command that replaces it.
+        if (command.equals("commit")) {
+            handleCommit(args);
+            return;
+        }
+        if (command.equals("help")) {
+            printUsage();
+            return;
+        }
+
         Commitment commitment;
         Set<LocalDate> checkIns;
         try {
             commitment = Storage.loadCommitment();
             checkIns = Storage.loadCheckIns();
         } catch (IOException e) {
-            System.out.println("Couldn't read your saved data: " + e.getMessage());
+            System.out.println("Couldn't read your saved data. " + e.getMessage());
             return;
         }
 
         switch (command) {
-            case "commit":
-                handleCommit(args);
-                break;
             case "done":
                 handleDone(commitment, checkIns);
                 break;
             case "status":
                 handleStatus(commitment, checkIns);
-                break;
-            case "help":
-                printUsage();
                 break;
             default:
                 System.out.println("Unknown command: " + args[0]);
