@@ -46,7 +46,7 @@ java -cp out StreakWithStakes help
 - [x] Load saved data at startup and block duplicate check-ins
 - [x] Calculate and display the current streak
 - [x] Count misses and display weekly status
-- [ ] Show limit warning and broken-commitment message
+- [x] Show limit warning and broken-commitment message
 - [ ] Handle missing or bad files, and add JUnit tests
 
 ## System Diagram

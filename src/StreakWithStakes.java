@@ -141,6 +141,24 @@ public class StreakWithStakes {
 
         int misses = StreakCalculator.countMisses(checkIns, commitment.weekStart(), today);
         System.out.println("Misses this week: " + misses + " of " + commitment.allowedMisses() + " allowed");
+        printStakes(commitment, misses, today);
+    }
+
+    private static void printStakes(Commitment commitment, int misses, LocalDate today) {
+        int allowed = commitment.allowedMisses();
+        boolean weekOver = today.isAfter(commitment.weekStart().plusDays(6));
+
+        if (misses > allowed) {
+            System.out.println("COMMITMENT BROKEN. You missed " + misses + " days, but only " + allowed + " were allowed.");
+            System.out.println("Consequence triggered: " + commitment.consequence());
+        } else if (weekOver) {
+            System.out.println("Week complete. You kept your commitment!");
+            System.out.println("Start next week with a new commit.");
+        } else if (misses == allowed) {
+            System.out.println("WARNING: You're at your limit. One more miss and: " + commitment.consequence());
+        } else {
+            System.out.println("You can miss " + (allowed - misses) + " more day(s) this week.");
+        }
     }
 
     private static void printUsage() {
